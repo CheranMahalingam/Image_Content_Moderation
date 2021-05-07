@@ -5,5 +5,5 @@ An image repository with profanity censorship
 
 # Platform Architecture
 <p align="center">
-    <img src="images/architecture_diagram.png">
+    <img src="images/ArchitectureDiagram.png">
 </p>
