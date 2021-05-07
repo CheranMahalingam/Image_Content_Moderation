@@ -1,0 +1,172 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Lambda to censor inappropriate text from images
+
+Globals:
+  Function:
+    Timeout: 60
+
+Resources:
+  ServiceApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Cors:
+        AllowMethods: "'GET,POST,PUT,OPTIONS'"
+        AllowHeaders: "'Content-Type,Authorization'"
+        AllowOrigin: "'http://localhost:3000'"
+      Auth:
+        Authorizers:
+          CognitoAuthorizer:
+            UserPoolArn: !GetAtt CognitoUserPool.Arn
+
+  ContentModerationFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: ContentModerationFunction
+      PackageType: Image
+      MemorySize: 256
+      Environment:
+        Variables:
+          S3_PROCESSED_IMAGE_BUCKET_NAME: !Ref S3ProcessedImageBucket
+      Policies:
+        - RekognitionDetectOnlyPolicy: {}
+        - S3ReadPolicy:
+            BucketName: !Sub "image-moderation-${AWS::AccountId}"
+        - S3WritePolicy:
+            BucketName: !Ref S3ProcessedImageBucket
+      Events:
+        NewImageUpload:
+          Type: S3
+          Properties:
+            Bucket: !Ref S3ImageUploadBucket
+            Events: s3:ObjectCreated:Put
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./moderate_content/handler
+      DockerTag: python3.8-v1
+
+  UploadRequestFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: UploadRequestFunction
+      PackageType: Image
+      Environment:
+        Variables:
+          S3_PROCESSED_IMAGE_BUCKET_NAME: !Ref S3ProcessedImageBucket
+          S3_IMAGE_BUCKET_NAME: !Sub "image-moderation-${AWS::AccountId}"
+      Policies:
+        - S3CrudPolicy:
+            BucketName: !Ref S3ProcessedImageBucket
+        - S3CrudPolicy:
+            BucketName: !Sub "image-moderation-${AWS::AccountId}"
+      Events:
+        UploadPublicImage:
+          Type: Api
+          Properties:
+            Path: /upload/public
+            Method: GET
+            RestApiId: !Ref ServiceApi
+            Auth:
+              Authorizer: CognitoAuthorizer
+        UploadPrivateImage:
+          Type: Api
+          Properties:
+            Path: /upload/private
+            Method: GET
+            RestApiId: !Ref ServiceApi
+            Auth:
+              Authorizer: CognitoAuthorizer
+        ViewPublicGallery:
+          Type: Api
+          Properties:
+            Path: /view-image/public
+            Method: GET
+            RestApiId: !Ref ServiceApi
+            Auth:
+              Authorizer: CognitoAuthorizer     
+        ViewPrivateImages:
+          Type: Api
+          Properties:
+            Path: /view-image/private
+            Method: GET
+            RestApiId: !Ref ServiceApi
+            Auth:
+              Authorizer: CognitoAuthorizer
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./presigned_url/handler
+      DockerTag: python3.8-v1
+
+  S3ImageUploadBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "image-moderation-${AWS::AccountId}"
+      AccessControl: Private
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - "*"
+            AllowedMethods:
+              - GET
+              - POST
+              - PUT
+              - HEAD
+            AllowedOrigins:
+              - "http://localhost:3000"
+
+  S3ProcessedImageBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: Private
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - "*"
+            AllowedMethods:
+              - GET
+              - POST
+              - PUT
+              - HEAD
+            AllowedOrigins:
+              - "http://localhost:3000"
+
+  CognitoUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: image-app-user-pool
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 6
+          RequireLowercase: False
+          RequireNumbers: True
+          RequireSymbols: False
+          RequireUppercase: True
+
+  CognitoUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: image-app-user-pool-client
+      GenerateSecret: False
+      UserPoolId: !Ref CognitoUserPool
+
+Outputs:
+  ContentModerationApi:
+    Description: "API Gateway endpoint URL for Prod stage for Content Moderation function"
+    Value: !Sub "https://${ServiceApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
+
+  ImageUploadBucket:
+    Description: "S3 bucket for image uploads"
+    Value: !Ref S3ImageUploadBucket
+
+  ProcessedImageBucket:
+    Description: "S3 bucket to store censored images"
+    Value: !Ref S3ProcessedImageBucket
