@@ -9,7 +9,7 @@ function FileDetails(props) {
       <Typography>
         {`File Name: ${file.name}`}
         <br />
-        {`File Name: ${file.type}`}
+        {`File Type: ${file.type}`}
         <br />
         {`File Size: ${file.size}`}
       </Typography>
