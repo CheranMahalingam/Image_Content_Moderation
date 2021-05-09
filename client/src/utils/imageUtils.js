@@ -77,9 +77,11 @@ export const uploadImage = async (presignedResponse, file) => {
 export const viewImages = async (presignedResponse) => {
   const s3Uris = presignedResponse.response;
   let imageUri = [];
-  for (let uri of s3Uris) {
-    const response = await fetch(uri).catch((err) => console.log(err));
-    imageUri.push(response);
+  if (s3Uris) {
+    for (let uri of s3Uris) {
+      const response = await fetch(uri).catch((err) => console.log(err));
+      imageUri.push(response);
+    }
   }
   return imageUri;
 };

@@ -3,7 +3,7 @@
 import json
 import os
 
-from presigned_url import create_presigned_url_put, create_presigned_url_get, get_s3_image_list, create_multiple_presigned_urls
+from generate_presigned_url import create_presigned_url_put, create_presigned_url_get, get_s3_image_list, create_multiple_presigned_urls
 from errors import BucketObjectError, ResourceNotFoundError
 
 ALLOWED_HEADERS = 'Content-Type'

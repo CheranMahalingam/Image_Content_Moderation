@@ -21,7 +21,9 @@ function PublicGallery() {
     const responseObj = await getPresignedUrlGet(true).catch((err) =>
       console.log(err)
     );
-    setImages(await viewImages(responseObj));
+    if (responseObj) {
+      setImages(await viewImages(responseObj));
+    }
     setLoading(false);
   }, []);
 

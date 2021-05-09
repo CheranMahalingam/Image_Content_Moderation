@@ -21,7 +21,9 @@ function PrivateImageRepository() {
     const responseObj = await getPresignedUrlGet(false).catch((err) =>
       console.log(err)
     );
-    setUserImages(await viewImages(responseObj));
+    if (responseObj) {
+      setUserImages(await viewImages(responseObj));
+    }
     setLoading(false);
   }, []);
 
