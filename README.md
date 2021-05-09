@@ -1,5 +1,5 @@
 # Image Content Moderation
-An image repository featuring the detection of inappropriate and unwanted content using Amazon Rekognition
+An image repository featuring the detection of inappropriate text using Amazon Rekognition
 <p>
     <img src="images/Swear.png" width=400 />
     <img src="images/Censored.png" width=412 />
