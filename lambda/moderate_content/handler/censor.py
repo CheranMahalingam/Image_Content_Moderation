@@ -11,17 +11,31 @@ def evaluate_profanity(text):
 
     Args:
         text: String representing a word detected in the image
-    
+
     Returns:
         Boolean representing whether the word was inappropriate and should be censored
     """
-    score = predict_prob([text])[0]
-    print(score, text)
+    score = get_profanity_score(text)
     # Words with negativity above this threshold are censored
     if score > 0.4:
         return True
     else:
         return False
+
+
+def get_profanity_score(text):
+    """
+    Gauges how innapropriate a word is. This function was not combined with evaluate_profanity()
+    so that it would be easy to mock predict_prob in unit tests.
+
+    Args:
+        text: String representing a word detected in the image
+
+    Returns:
+        Float between 0 and 1 where 1 indicates a word is very inappropriate and 0
+        indicates a word is appropriate
+    """
+    return predict_prob([text])[0]
 
 
 def blur_text(binary_image, rek_response):
@@ -43,10 +57,8 @@ def blur_text(binary_image, rek_response):
 
     # List of detected words that are considered profane and Amazon Rekognition is confident about its prediction
     text_list = [word for word in rek_response if word['Confidence'] > 80 and evaluate_profanity(word['DetectedText'])]
-    print(text_list)
 
     for text in get_text_position(text_list, source_size):
-        print(text)
         image_copy = image.copy()
         blurred_text = image_copy.crop(text[:4])
         blurred_text = blurred_text.filter(ImageFilter.GaussianBlur(10))

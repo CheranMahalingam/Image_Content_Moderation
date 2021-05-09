@@ -113,9 +113,7 @@ Resources:
               - "*"
             AllowedMethods:
               - GET
-              - POST
               - PUT
-              - HEAD
             AllowedOrigins:
               - "http://localhost:3000"
 
@@ -133,9 +131,7 @@ Resources:
               - "*"
             AllowedMethods:
               - GET
-              - POST
               - PUT
-              - HEAD
             AllowedOrigins:
               - "http://localhost:3000"
 
