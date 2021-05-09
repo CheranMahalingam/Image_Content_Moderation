@@ -9,13 +9,13 @@ from PIL import Image
 from io import BytesIO
 import sys
 
-sys.path.insert(1, '../handler')
+sys.path.insert(1, '../../lambdas/presigned_url/handler')
 
 BUCKET_NAME = 'test_bucket'
 
 
 @mock_s3
-class TestModerateImage(unittest.TestCase):
+class TestPresignedUrl(unittest.TestCase):
     def setUp(self):
         client = boto3.client(
             's3',
@@ -45,7 +45,7 @@ class TestModerateImage(unittest.TestCase):
     
     def test_create_presigned_url_put(self):
         # Imported the methods inside the function to avoid creating AWS resources in reality
-        from presigned_url import create_presigned_url_put
+        from generate_presigned_url import create_presigned_url_put
 
         # Initialize s3 client
         client = boto3.client(
@@ -77,7 +77,7 @@ class TestModerateImage(unittest.TestCase):
 
     def test_create_presigned_url_get(self):
         # Imported the methods inside the function to avoid creating AWS resources in reality
-        from presigned_url import create_presigned_url_get
+        from generate_presigned_url import create_presigned_url_get
 
         # Initialize s3 client
         client = boto3.client(
@@ -89,7 +89,7 @@ class TestModerateImage(unittest.TestCase):
 
         # Test whether a presigned url is generated to get a public image
         # Save image as raw data
-        im = Image.open(r'images/words-quote.jpg')
+        im = Image.open(r'../images/words-quote.jpg')
         b = BytesIO()
         im.save(b, format='JPEG')
 
@@ -103,10 +103,10 @@ class TestModerateImage(unittest.TestCase):
         self.assertTrue('Signature' in response)
         self.assertTrue('Expires' in response)
     
-    @patch('presigned_url.create_presigned_url_get')
+    @patch('generate_presigned_url.create_presigned_url_get')
     def test_create_multiple_presigned_urls(self, mock_create_presigned_url_get):
         # Imported the methods inside the function to avoid creating AWS resources in reality
-        from presigned_url import create_multiple_presigned_urls
+        from generate_presigned_url import create_multiple_presigned_urls
 
         # Test whether presigned urls will be generated if there are no s3 objects
         empty_s3_bucket = {}
@@ -132,7 +132,7 @@ class TestModerateImage(unittest.TestCase):
 
     def test_get_s3_image_list(self):
         # Imported the methods inside the function to avoid creating AWS resources in reality
-        from presigned_url import get_s3_image_list
+        from generate_presigned_url import get_s3_image_list
 
         # Initialize s3 client
         client = boto3.client(
@@ -149,7 +149,7 @@ class TestModerateImage(unittest.TestCase):
 
         # Test whether public images are returned when there is a single image in the s3 bucket
         # Save image as raw data
-        im = Image.open(r'images/words-quote.jpg')
+        im = Image.open(r'../images/words-quote.jpg')
         b = BytesIO()
         im.save(b, format='JPEG')
 
@@ -162,7 +162,7 @@ class TestModerateImage(unittest.TestCase):
 
         # Test whether private images are returned when there are multiple images in the s3 bucket
         # Save image as raw data
-        im = Image.open(r'images/swear.jpg')
+        im = Image.open(r'../images/swear.jpg')
         b = BytesIO()
         im.save(b, format='JPEG')
 

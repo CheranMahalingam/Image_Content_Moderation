@@ -7,7 +7,8 @@ from PIL import Image
 from io import BytesIO, StringIO
 import sys
 
-sys.path.insert(1, '../handler')
+sys.path.insert(1, '../../lambdas/moderate_content/handler')
+
 from censor import evaluate_profanity, blur_text
 
 
@@ -42,7 +43,7 @@ class TestCensor(unittest.TestCase):
         mock_get_text_position.return_value = []
 
         # Save image as raw data
-        im = Image.open(r'images/words-quote.jpg')
+        im = Image.open(r'../images/words-quote.jpg')
         b = BytesIO()
         im.save(b, format='JPEG')
 

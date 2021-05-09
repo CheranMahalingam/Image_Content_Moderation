@@ -8,7 +8,7 @@ from PIL import Image
 from io import BytesIO
 import sys
 
-sys.path.insert(1, '../handler')
+sys.path.insert(1, '../../lambdas/moderate_content/handler')
 
 BUCKET_NAME = 'test_bucket'
 OBJECT_KEY = "test-key"
@@ -57,7 +57,7 @@ class TestModerateImage(unittest.TestCase):
 
         # Test getting a processed image from a s3 bucket
         # Save image as raw data
-        im = Image.open(r'images/words-quote.jpg')
+        im = Image.open(r'../images/words-quote.jpg')
         b = BytesIO()
         im.save(b, format='JPEG')
 
@@ -87,7 +87,7 @@ class TestModerateImage(unittest.TestCase):
 
         # Test sending a single processed image to a s3 bucket
         # Save image as raw data
-        im = Image.open(r'images/words-quote.jpg')
+        im = Image.open(r'../images/words-quote.jpg')
         b = BytesIO()
         im.save(b, format='JPEG')
 
@@ -102,7 +102,7 @@ class TestModerateImage(unittest.TestCase):
 
         # Test updating s3 bucket with multiple processed images
         # Save new image as raw data
-        im = Image.open(r'images/swear.jpg')
+        im = Image.open(r'../images/swear.jpg')
         b = BytesIO()
         im.save(b, format='JPEG')
 
