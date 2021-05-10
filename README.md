@@ -1,5 +1,5 @@
 # Image Content Moderation
-An image repository featuring the detection of inappropriate text using Amazon Rekognition
+An image repository featuring the detection of inappropriate text using Amazon Rekognition [Link to Demo](https://main.d28fod3nlo4xoq.amplifyapp.com)
 <p>
     <img src="images/Swear.png" width=400 />
     <img src="images/Censored.png" width=412 />
@@ -28,7 +28,7 @@ sam build
 
 3. Provision the AWS resources
 ```
-sam deploy --template-file .aws-sam/build/template.yaml --stack-name image-content-moderator --image-repository <AWS ECR Repository URI> --region <AWS region> --profile <AWS CLI profile> --capabilities CAPABILITY_IAM
+sam deploy --template-file .aws-sam/build/template.yaml --stack-name image-content-moderator --image-repository <AWS ECR Repository URI> --region <AWS region> --profile <AWS CLI profile> --capabilities CAPABILITY_IAM --parameter-overrides ClientUri=http://localhost:3000
 ```
 If you do not have a private AWS ECR repository check out https://docs.aws.amazon.com/AmazonECR/latest/userguide/docker-push-ecr-image.html
 

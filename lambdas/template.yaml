@@ -6,15 +6,20 @@ Globals:
   Function:
     Timeout: 60
 
+Parameters:
+  ClientUri:
+    Type: String
+    Description: Uri of frontend  
+
 Resources:
   ServiceApi:
     Type: AWS::Serverless::Api
     Properties:
       StageName: Prod
       Cors:
-        AllowMethods: "'GET,POST,PUT,OPTIONS'"
+        AllowMethods: "'GET,OPTIONS'"
         AllowHeaders: "'Content-Type,Authorization'"
-        AllowOrigin: "'http://localhost:3000'"
+        AllowOrigin: !Sub "'${ClientUri}'"
       Auth:
         Authorizers:
           CognitoAuthorizer:
@@ -55,6 +60,7 @@ Resources:
         Variables:
           S3_PROCESSED_IMAGE_BUCKET_NAME: !Ref S3ProcessedImageBucket
           S3_IMAGE_BUCKET_NAME: !Sub "image-moderation-${AWS::AccountId}"
+          CLIENT_URI: !Ref ClientUri
       Policies:
         - S3CrudPolicy:
             BucketName: !Ref S3ProcessedImageBucket
@@ -114,8 +120,8 @@ Resources:
             AllowedMethods:
               - GET
               - PUT
-            AllowedOrigins:
-              - "http://localhost:3000"
+            AllowedOrigins: 
+              - !Ref ClientUri
 
   S3ProcessedImageBucket:
     Type: AWS::S3::Bucket
@@ -132,9 +138,8 @@ Resources:
             AllowedMethods:
               - GET
               - PUT
-            AllowedOrigins:
-              - "http://localhost:3000"
-
+            AllowedOrigins: 
+              - !Ref ClientUri
   CognitoUserPool:
     Type: AWS::Cognito::UserPool
     Properties:

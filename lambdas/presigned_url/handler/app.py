@@ -7,7 +7,7 @@ from generate_presigned_url import create_presigned_url_put, create_presigned_ur
 from errors import BucketObjectError, ResourceNotFoundError
 
 ALLOWED_HEADERS = 'Content-Type'
-ALLOWED_ORIGINS = 'http://localhost:3000'
+ALLOWED_ORIGINS = os.getenv("CLIENT_URI")
 ALLOWED_METHODS = 'GET'
 
 def lambda_handler(event, context):
