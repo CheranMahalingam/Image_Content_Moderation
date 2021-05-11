@@ -38,7 +38,7 @@ Switch to the client folder and create a .env file
 cd ../client
 ```
 ```
-type nul >> ".env
+type nul >> ".env"
 ```
 or
 ```
