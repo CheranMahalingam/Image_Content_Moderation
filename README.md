@@ -1,5 +1,5 @@
 # Image Content Moderation
-An image repository featuring the detection of inappropriate text using Amazon Rekognition [Link to Demo](https://main.d28fod3nlo4xoq.amplifyapp.com)
+An image repository featuring the detection of inappropriate text using Amazon Rekognition
 <p>
     <img src="images/Swear.png" width=400 />
     <img src="images/Censored.png" width=412 />
